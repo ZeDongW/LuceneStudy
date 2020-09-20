@@ -69,6 +69,22 @@ public class LuceneUtils <T>{
      */
     private LuceneUtils(){};
 
+    public static Version getVersion() {
+        return version;
+    }
+
+    public static Directory getDirectory() {
+        return directory;
+    }
+
+    public static Analyzer getAnalyzer() {
+        return analyzer;
+    }
+
+    public static IndexWriter.MaxFieldLength getMaxFieldLength() {
+        return maxFieldLength;
+    }
+
     /**
      * Description: 将JavaBean对象封装为Document对象
      * @methodName: javaBean2Document
