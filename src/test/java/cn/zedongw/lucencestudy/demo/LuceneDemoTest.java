@@ -19,4 +19,17 @@ public class LuceneDemoTest {
     public void findIndexDb() throws Exception{
         System.out.println(luceneDemo.findIndexDb("太阳"));
     }
+
+    @Test
+    public void createIndexDbByUtils() throws Exception{
+//        Article article = new Article(3, "笔记", "化学笔记");
+//        Article article = new Article(4, "笔记", "生物笔记");
+        Article article = new Article(5, "笔记", "物理笔记");
+        luceneDemo.createIndexDbByUtils(article);
+    }
+
+    @Test
+    public void findIndexDbByUtils() throws Exception{
+        System.out.println(luceneDemo.findIndexDbByUtils("物理"));
+    }
 }

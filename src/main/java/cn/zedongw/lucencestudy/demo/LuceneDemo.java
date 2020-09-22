@@ -1,6 +1,7 @@
 package cn.zedongw.lucencestudy.demo;
 
 import cn.zedongw.lucencestudy.entity.Article;
+import cn.zedongw.lucencestudy.utils.LuceneUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -125,6 +126,85 @@ public class LuceneDemo {
             article.setId(Integer.parseInt(document.get("id")));
             article.setTittle(document.get("tittle"));
             article.setContent(document.get("content"));
+
+            //将article放入集合中
+            articleList.add(article);
+        }
+
+        //关闭IndexSearch
+        indexSearcher.close();
+
+        //返回集合
+        return articleList;
+    }
+
+    /**
+     * Description: 通过LuceneUtils创建索引库
+     * @methodName: createIndexDbByUtils
+     * @param article 1
+     * @throws
+     * @return: void
+     * @author: ZeDongW
+     * @date: 2020/9/21 0021 14:40
+     */
+    public void createIndexDbByUtils(Article article) throws Exception{
+        //通过Utils将javabean转化为document对象
+        Document document = LuceneUtils.javaBean2Document(article);
+
+        //创建IndexWriter对象
+        IndexWriter indexWriter = new IndexWriter(LuceneUtils.getDirectory(), LuceneUtils.getAnalyzer(), LuceneUtils.getMaxFieldLength());
+
+        //将document对象写入Lucene索引库
+        indexWriter.addDocument(document);
+
+        //关闭IndexWriter
+        indexWriter.close();
+    }
+
+    /**
+     * Description: 通过LuceneUtils查找索引库
+     * @methodName: findIndexDbByUtils
+     * @param keyWords 1
+     * @throws
+     * @return: java.util.List<cn.zedongw.lucencestudy.entity.Article>
+     * @author: ZeDongW
+     * @date: 2020/9/21 0021 14:44
+     */
+    public List<Article> findIndexDbByUtils(String keyWords) throws Exception{
+        //创建Article集合对象
+        ArrayList<Article> articleList = new ArrayList<>();
+
+        //创建IndexSearch对象
+        IndexSearcher indexSearcher = new IndexSearcher(LuceneUtils.getDirectory());
+
+        //创建QueryParser对象
+        QueryParser queryParser = new QueryParser(LuceneUtils.getVersion(), "content", LuceneUtils.getAnalyzer());
+
+        //QuryParser对象转换关键词为Query对象
+        Query query = queryParser.parse(keyWords);
+
+        //搜索条数
+        int maxRecord = 100;
+
+        //搜素结果集合
+        TopDocs docs = indexSearcher.search(query, maxRecord);
+
+        //迭代词汇表中符合条件的编号
+        for (int i = 0; i < docs.scoreDocs.length; i++) {
+            //创建article对象
+            Article article = new Article();
+
+            //取出封装编号和分数的ScoreDoc对象
+            ScoreDoc scoreDoc = docs.scoreDocs[i];
+
+            //获取scoreDoc编号
+            int no = scoreDoc.doc;
+
+            //根据scoreDoc编号获取Docunment对象
+            Document document = indexSearcher.doc(no);
+
+            //封装Article属性
+            article = LuceneUtils.document2JavaBean(document, Article.class);
 
             //将article放入集合中
             articleList.add(article);
